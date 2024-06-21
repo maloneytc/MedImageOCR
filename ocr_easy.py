@@ -16,7 +16,7 @@ def ocr(dcm_file, conf_thresh=0.5):
         raise e
     
     # Use verbose = False to suppress message about using the CPU vs GPU
-    reader = easyocr.Reader(['en'], gpu=False, verbose=False)
+    reader = easyocr.Reader(['en'], gpu=True, verbose=False)
 
     pix_array = this_dcm.pixel_array
     pil_image = Image.fromarray(np.uint8(pix_array))
