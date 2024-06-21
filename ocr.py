@@ -1,4 +1,6 @@
 import sys
+import io
+import zipfile
 from pathlib import Path
 import pydicom as pdm
 from PIL import Image, ImageOps
@@ -8,8 +10,10 @@ import pytesseract
 from pytesseract import Output
 import matplotlib.pyplot as plt
 
-def dcm_ocr(dcm_path):
-    dcm = pdm.read_file(dcm_path)
+
+
+def dcm_ocr(dcm_path, force=True):
+    dcm = pdm.read_file(dcm_path, force=force)
     text = ocr(dcm)
 
     return text
@@ -26,6 +30,7 @@ def ocr(dcm):
 
 def ocr_grayscale(pix_array, all_data=False):
     norm_img = np.zeros_like(pix_array)
+    norm_img = np.ascontiguousarray(norm_img, dtype=np.uint8)
 
     data_epf = cv2.edgePreservingFilter(pix_array)
     norm_img = cv2.normalize(data_epf, norm_img, 0, 255, cv2.NORM_MINMAX)
@@ -85,6 +90,23 @@ def show_ocr(dcm_path, conf_thr=25):
     plt.figure(figsize=(10,10))
     plt.imshow(labeled_image, cmap='gray')
 
+def dcm_zip_ocr(zip_path):
+    results = []
+    with zipfile.ZipFile(zip_path) as this_zip:
+        for file_name in this_zip.namelist():
+            try:
+                data = this_zip.read(file_name)
+                file_obj = io.BytesIO(data)
+                text = dcm_ocr(file_obj, force=True)
+                print(text)
+                this_dcm = pdm.read_file(file_obj, force=True)
+                results.append({'file':file_name, 'text':text, 'errors':None,
+                                'StudyUID': this_dcm.StudyInstanceUID, 'SeriesUID': this_dcm.SeriesInstanceUID})
+            except Exception as e:
+                results.append({'file':file_name, 'text':None, 'errors':e,
+                                'StudyUID': None, 'SeriesUID': None})
+                
+    return results
 
 if __name__ == "__main__":
     dcm_path = Path(sys.argv[1])
