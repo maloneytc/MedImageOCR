@@ -18,7 +18,12 @@ def ocr(dcm_file, conf_thresh=0.5):
     # Use verbose = False to suppress message about using the CPU vs GPU
     reader = easyocr.Reader(['en'], gpu=True, verbose=False)
 
-    pix_array = this_dcm.pixel_array
+    try:
+        pix_array = this_dcm.pixel_array
+    except AttributeError:
+         return {'StudyUID': this_dcm.StudyInstanceUID, 'SeriesUID': this_dcm.SeriesInstanceUID,
+                 'file_name':file_name, 'Error': "Could not read file as a DICOM."}
+
     pil_image = Image.fromarray(np.uint8(pix_array))
     result = reader.readtext(np.array(pil_image.convert('RGB')))
     
