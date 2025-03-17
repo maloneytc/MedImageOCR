@@ -11,7 +11,7 @@ import easyocr
 
 def ocr(dcm_file, conf_thresh=0.5):
     try:
-        this_dcm = pydicom.read_file(dcm_file)
+        this_dcm = pydicom.dcmread(dcm_file)
     except Exception as e:
         raise e
     
@@ -20,9 +20,9 @@ def ocr(dcm_file, conf_thresh=0.5):
 
     try:
         pix_array = this_dcm.pixel_array
-    except AttributeError:
+    except AttributeError as e:
          return {'StudyUID': this_dcm.StudyInstanceUID, 'SeriesUID': this_dcm.SeriesInstanceUID,
-                 'file_name':file_name, 'Error': "Could not read file as a DICOM."}
+                 'Error': e}
 
     pil_image = Image.fromarray(np.uint8(pix_array))
     result = reader.readtext(np.array(pil_image.convert('RGB')))
@@ -48,7 +48,7 @@ def zip_ocr(zip_path, conf_thresh=0.5):
             file_obj = io.BytesIO(data)
 
             try:
-                this_dcm = pydicom.read_file(file_obj)
+                this_dcm = pydicom.dcmread(file_obj)
                 file_obj.seek(0)
             except:
                 results.append({'file_name':file_name, 'Error': "Could not read file as a DICOM."})

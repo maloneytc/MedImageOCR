@@ -8,11 +8,11 @@ RUN apt-get upgrade -y
 
 RUN apt-get -y install python3-pip
 
+RUN pip3 install pylibjpeg pylibjpeg-libjpeg pydicom
 RUN pip3 install opencv-python==4.6.0.66
 RUN pip3 install pytesseract
 RUN pip3 install pillow
 RUN pip3 install matplotlib
-RUN pip3 install pip install pylibjpeg pylibjpeg-libjpeg pydicom
 RUN pip3 install easyocr
 
 # Initialize easyocr by downloading the english model
