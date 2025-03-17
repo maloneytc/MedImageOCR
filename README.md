@@ -22,10 +22,10 @@ Uses Google's Tesseract engine for OCR.
 ```docker build --no-cache -t ocr:latest .```
 
 ### Run 
-```docker run --rm -v /Volumes/AMBRA_Backup/ERICH-GENE/All_Data___De_Identified/02-21-394359/CT_2_16_840_1_114444_637165914114654373_2063130837_20200123:/data ocr:latest /data/CT_20200123.zip```
+```docker run --rm -v <path to data directory>:/data ocr:latest /data/<zip file>```
 
 ### Run interactively
-```docker run --rm -v /Volumes/AMBRA_Backup/ERICH-GENE/All_Data___De_Identified/02-21-394359/CT_2_16_840_1_114444_637165914114654373_2063130837_20200123:/data --env "PYTHONUNBUFFERED=1" -it --entrypoint /bin/bash ocr:latest```
+```docker run --rm -v <path to data directory>:/data --env "PYTHONUNBUFFERED=1" -it --entrypoint /bin/bash ocr:latest```
 
 ### Run with GPU
-```docker run --rm --gpus all -v /Volumes/AMBRA_Backup/ERICH-GENE/All_Data___De_Identified/02-21-394359/CT_2_16_840_1_114444_637165914114654373_2063130837_20200123:/data ocr:latest /data/CT_20200123.zip```
+```docker run --rm --gpus all -v <path to data directory>:/data ocr:latest /data/<zip file>```
